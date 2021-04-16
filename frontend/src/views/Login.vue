@@ -4,9 +4,6 @@
       <v-card-title class="pb-0">
         <h1 class="mx-auto mb-5">Ingreso</h1>
       </v-card-title>
-      <v-alert v-if="isFormRejected" type="error">
-        <p>Usuario o contraseña inválidos. Ingresa los datos correctos.</p>
-      </v-alert>
       <v-form ref="form">
         <v-text-field
           v-model="email"
@@ -40,6 +37,7 @@
 
 <script>
 import { Auth } from '@/firebase'
+import { mapActions } from 'vuex'
 
 export default {
   data () {
@@ -58,6 +56,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['setError']),
     validate () {
       return this.$refs.form.validate()
     },
@@ -68,7 +67,7 @@ export default {
             this.$router.push({ name: 'Products' })
           })
           .catch(() => {
-            this.isFormRejected = true
+            this.setError({ message: 'Usuario y/o constraseña no corresponden' })
           })
       }
     }

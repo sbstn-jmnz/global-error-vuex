@@ -1,33 +1,35 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
-import { Auth } from '@/firebase'
+import ProductService from '@/services/ProductService'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    products: []
+    products: [],
+    error: {}
   },
   mutations: {
     SET_PRODUCTS (store, products) {
       store.products = products
+    },
+    SET_ERROR (store, error) {
+      store.error = error
     }
   },
   actions: {
     async getProducts (actionContext) {
       const { commit } = actionContext
-      const productsURL = '/api/products'
-
       try {
-        const token = await Auth.currentUser?.getIdToken(true)
-        const response = await axios.get(productsURL, { headers: { Authorization: `Bearer ${token}` } })
-        commit('SET_PRODUCTS', response.data)
+        const products = await ProductService.getProducts()
+        commit('SET_PRODUCTS', products)
       } catch (error) {
-        console.log(error)
+        commit('SET_ERROR', error)
       }
+    },
+    setError (actionContext, error) {
+      const { commit } = actionContext
+      commit('SET_ERROR', error)
     }
-  },
-  modules: {
   }
 })
